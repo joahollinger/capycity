@@ -468,7 +468,6 @@ int main() {
 
 					return result;
 				};
-
 				vector<pair<int, int>> sortKennzahlen = sortierungKennzahlen(kennzahlen);
 
 				for (auto i : sortKennzahlen) {
