@@ -1,9 +1,6 @@
 #include <iostream>
 using namespace std;
 
-// PROBLEM MIT #INCLUDE <VECTOR>
-// Kapitel 2 fehlt: Auflistung der Gebaude + Materialien und Einzelpreis + Gesamtpreis
-
 class CapycitySim {
 
 public:
