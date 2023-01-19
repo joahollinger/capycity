@@ -1,5 +1,7 @@
 #include <iostream>
+#include <map>
 using namespace std;
+
 
 class CapycitySim {
 
@@ -14,7 +16,6 @@ public:
 
 	void print(int laengeFlaeche, int breiteFlaeche, int* flaeche);
 
-	void printAuflistung();
 
 };
 
@@ -96,10 +97,6 @@ void CapycitySim::print(int laengeFlaeche, int breiteFlaeche, int* flaeche) {
 	}
 }
 
-void CapycitySim::printAuflistung()
-{
-	printf("Hallo");
-}
 
 
 
@@ -138,18 +135,25 @@ class Building {
 private:
 	int grundpreis;
 	string label;
-	Material* material;
+	map<string, int> material;
+
+	/*
+		Ich verwende Carlas Idee, da meiner Meinung nach die "Verwaltung der Materialien" als einfache map in der
+		Building-Klasse vollkommend ausreichend ist. Eine separate Klasse hierfür, wäre meiner Meinung nach, für diesen
+		"kleinen" Aspekt, etwas über das Ziel hinausgeschossen.Zudem mussten hierfür weniger Anpassungen getroffen werden.
+
+	*/
 
 public:
 	Building() = default;
-	Building(int gp, string l, Material* mat) : grundpreis(gp), label(l), material{ mat } {}
+	Building(int gp, string l, map<string, int> mat) : grundpreis(gp), label(l), material{ mat } {}
 	int getGrundpreis() {
 		return this->grundpreis;
 	}
 	string getLabel() {
 		return this->label;
 	}
-	Material* getMat() {
+	map<string, int> getMat() {
 		return this->material;
 
 	}
@@ -157,18 +161,19 @@ public:
 
 class Wasserkraftwerk : public Building {
 public:
-	Wasserkraftwerk(int gp, string l, Material* mat) : Building(gp, l, mat) {};
+	Wasserkraftwerk(int gp, string l, map<string, int> mat) : Building(gp, l, mat) {};
 };
 
 class Windkraftwerk : public Building {
 public:
-	Windkraftwerk(int gp, string l, Material* mat) : Building(gp, l, mat) {};
+	Windkraftwerk(int gp, string l, map<string, int> mat) : Building(gp, l, mat) {};
 };
 
 class Solarpanel : public Building {
 public:
-	Solarpanel(int gp, string l, Material* mat) : Building(gp, l, mat) {};
+	Solarpanel(int gp, string l, map<string, int> mat) : Building(gp, l, mat) {};
 };
+
 
 int main() {
 
@@ -179,9 +184,20 @@ int main() {
 	Kunststoff k(5, "K");
 
 
-	Material* matWA = new Material[4]{ h, h, m, k };
-	Material* matWI = new Material[4]{ h, m, m, k };
-	Material* matSP = new Material[4]{ m, m, k, k };
+	map<string, int> matWA;
+	matWA["Holz"] = 2;
+	matWA["Metall"] = 1;
+	matWA["Kunststoff"] = 1;
+
+	map<string, int> matWI;
+	matWI["Holz"] = 1;
+	matWI["Metall"] = 2;
+	matWI["Kunststoff"] = 1;
+
+	map<string, int> matSP;
+	matSP["Metall"] = 2;
+	matSP["Kunststoff"] = 2;
+
 
 
 
@@ -290,27 +306,33 @@ int main() {
 			cout << "Auflistung der Gebaeude: \n \n";
 
 			for (int i = 0; i < wieVieleGebaeude; i++) {
-				Material* gebaeudeMats = new Material[4]{};
+				map<string, int> gebaeudeMats;
 				Building aktGebaeude = gebaeude[i];
 				int gebaeudePreis = aktGebaeude.getGrundpreis();
 
 
 				gebaeudeMats = aktGebaeude.getMat();
-				for (int i2 = 0; i2 < 4; i2++) {
-					gebaeudePreis += gebaeudeMats[i2].getPreis();
 
-				}
+				map<string, int>::iterator it = gebaeudeMats.begin();
+
 				cout << "Gebaeude " << aktGebaeude.getLabel() << "\n";
 				cout << "Grundpreis: " << aktGebaeude.getGrundpreis() << "\n";
 				cout << "Benoetigtes Material: \n";
-				for (int i2 = 0; i2 < 4; i2++) {
-					if (i2 < 3) {
-						cout << aktGebaeude.getMat()[i2].getLabel() << ", ";
+				while (it != gebaeudeMats.end()) {
+					if (it->first == "Holz") {
+						gebaeudePreis += h.getPreis() * it->second;
 					}
-					else if (i2 < 4) {
-						cout << aktGebaeude.getMat()[i2].getLabel();
+					else if (it->first == "Metall") {
+						gebaeudePreis += m.getPreis() * it->second;
 					}
+					else if (it->first == "Kunststoff") {
+						gebaeudePreis += k.getPreis() * it->second;
+					}
+
+					cout << it->first << ": " << it->second << "\n";
+					++it;
 				}
+
 				cout << "\n";
 				cout << "Gesamtpreis: " << gebaeudePreis << "\n";
 
