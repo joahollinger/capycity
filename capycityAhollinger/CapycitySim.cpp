@@ -467,8 +467,6 @@ int main() {
 					}
 
 					return result;
-
-
 				};
 
 
